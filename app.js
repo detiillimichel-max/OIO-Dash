@@ -8,6 +8,7 @@ import { showGameOver } from './ui/game-over.js';
 
 const arena = document.getElementById('arena');
 const playerEl = document.getElementById('player');
+const hitboxEl = document.getElementById('player-hitbox');
 const scoreEl = document.getElementById('score');
 const coinsEl = document.getElementById('coins');
 const bestEl = document.getElementById('best');
@@ -15,20 +16,20 @@ const message = document.getElementById('message');
 const start = document.getElementById('start');
 const jumpBtn = document.getElementById('jump');
 
-const player = new Player(playerEl);
+const player = new Player(playerEl, hitboxEl);
 let playing = false;
 let score = 0;
 let coins = 0;
 let best = Number(localStorage.getItem('oio-dash-best') || 0);
-let speed = 5;
+let speed = 4.5;
 let spawnTimer = 0;
 let coinTimer = 0;
 let last = 0;
 let obstacles = [];
 let coinItems = [];
 
-updateHud(scoreEl, coinsEl, score, coins);
-bestEl.textContent = best;
+updateHud(scoreEl, bestEl, score, best);
+coinsEl.textContent = '0';
 
 function jump() {
   if (!playing) return;
@@ -42,11 +43,11 @@ function startGame() {
   coinItems = [];
   score = 0;
   coins = 0;
-  speed = 5;
-  spawnTimer = 0;
-  coinTimer = 0;
-  updateHud(scoreEl, coinsEl, score, coins);
-  bestEl.textContent = best;
+  speed = 4.5;
+  spawnTimer = -700;
+  coinTimer = 500;
+  updateHud(scoreEl, bestEl, score, best);
+  coinsEl.textContent = '0';
   hideMenu(message);
   player.setSpeeding(false);
   playing = true;
@@ -94,20 +95,22 @@ function loop(t) {
   if (!playing) return;
   const dt = Math.min(32, t - last);
   last = t;
-  score += dt * 0.01;
-  speed = 5 + score / 70;
-  updateHud(scoreEl, coinsEl, score, coins);
-  player.setSpeeding(speed > 8);
+  score += dt * 0.0075;
+  speed = Math.min(8.2, 4.5 + score / 110);
+  updateHud(scoreEl, bestEl, score, best);
+  coinsEl.textContent = String(coins);
+  player.setSpeeding(speed > 7.1);
 
   spawnTimer += dt;
   coinTimer += dt;
 
-  if (spawnTimer > Math.max(560, 1120 - score * 2)) {
+  const obstacleGap = Math.max(1250, 2050 - score * 3.2);
+  if (spawnTimer > obstacleGap && obstacles.length < 2) {
     spawn();
     spawnTimer = 0;
   }
 
-  if (coinTimer > Math.max(720, 1250 - score * 1.5)) {
+  if (coinTimer > Math.max(850, 1500 - score * 1.2)) {
     spawnCoin();
     coinTimer = 0;
   }
@@ -115,11 +118,11 @@ function loop(t) {
   for (let i = obstacles.length - 1; i >= 0; i -= 1) {
     const obstacle = obstacles[i];
     const x = moveObstacle(obstacle, speed, dt);
-    if (hit(playerEl, obstacle, 22) && !player.jumping) {
+    if (hit(hitboxEl, obstacle, 3)) {
       gameOver();
       return;
     }
-    if (x > arena.clientWidth + 80) {
+    if (x > arena.clientWidth + 100) {
       obstacle.remove();
       obstacles.splice(i, 1);
     }
@@ -128,12 +131,12 @@ function loop(t) {
   for (let i = coinItems.length - 1; i >= 0; i -= 1) {
     const coin = coinItems[i];
     const x = moveObstacle(coin, speed, dt);
-    if (hit(playerEl, coin, 5)) {
+    if (hit(hitboxEl, coin, 2)) {
       collectCoin(coin);
       coinItems.splice(i, 1);
       continue;
     }
-    if (x > arena.clientWidth + 80) {
+    if (x > arena.clientWidth + 100) {
       coin.remove();
       coinItems.splice(i, 1);
     }
@@ -144,7 +147,7 @@ function loop(t) {
 
 start.addEventListener('click', startGame);
 jumpBtn.addEventListener('pointerdown', e => { e.preventDefault(); jump(); });
-arena.addEventListener('pointerdown', e => { if (e.target !== start) jump(); });
+arena.addEventListener('pointerdown', e => { if (!e.target.closest('button')) jump(); });
 document.addEventListener('keydown', e => {
   if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); jump(); }
   if (e.code === 'Enter' && !playing) startGame();
