@@ -10,6 +10,7 @@ const arena = document.getElementById('arena');
 const playerEl = document.getElementById('player');
 const scoreEl = document.getElementById('score');
 const coinsEl = document.getElementById('coins');
+const bestEl = document.getElementById('best');
 const message = document.getElementById('message');
 const start = document.getElementById('start');
 const jumpBtn = document.getElementById('jump');
@@ -27,6 +28,7 @@ let obstacles = [];
 let coinItems = [];
 
 updateHud(scoreEl, coinsEl, score, coins);
+bestEl.textContent = best;
 
 function jump() {
   if (!playing) return;
@@ -44,6 +46,7 @@ function startGame() {
   spawnTimer = 0;
   coinTimer = 0;
   updateHud(scoreEl, coinsEl, score, coins);
+  bestEl.textContent = best;
   hideMenu(message);
   player.setSpeeding(false);
   playing = true;
@@ -83,7 +86,7 @@ function burst(x, y) {
 
 function gameOver() {
   playing = false;
-  best = showGameOver(message, start, score, best, scoreEl);
+  best = showGameOver(message, start, score, best, bestEl);
   player.setSpeeding(false);
 }
 
