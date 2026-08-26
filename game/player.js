@@ -6,8 +6,9 @@ const SPRITES = {
 };
 
 export class Player {
-  constructor(element) {
+  constructor(element, hitbox) {
     this.element = element;
+    this.hitbox = hitbox;
     this.jumping = false;
     this.speeding = false;
     this.spriteCache = new Map();
@@ -34,20 +35,31 @@ export class Player {
     if (this.jumping) return false;
     this.jumping = true;
     this.element.classList.add('is-jumping');
+    this.hitbox.classList.add('is-jumping');
     this.setSprite('jump');
 
     const animation = this.element.animate(
       [
         { transform: 'translate3d(0, 0, 0) rotate(-2deg)' },
-        { transform: 'translate3d(0, -135px, 0) rotate(4deg)' },
+        { transform: 'translate3d(0, -150px, 0) rotate(4deg)' },
         { transform: 'translate3d(0, 0, 0) rotate(-2deg)' }
       ],
-      { duration: 620, easing: 'cubic-bezier(.18,.8,.25,1)' }
+      { duration: 720, easing: 'cubic-bezier(.18,.8,.25,1)' }
+    );
+
+    this.hitbox.animate(
+      [
+        { transform: 'translate3d(0, 0, 0)' },
+        { transform: 'translate3d(0, -150px, 0)' },
+        { transform: 'translate3d(0, 0, 0)' }
+      ],
+      { duration: 720, easing: 'cubic-bezier(.18,.8,.25,1)' }
     );
 
     animation.finished.catch(() => {}).finally(() => {
       this.jumping = false;
       this.element.classList.remove('is-jumping');
+      this.hitbox.classList.remove('is-jumping');
       this.setSprite(this.speeding ? 'speed' : 'run');
     });
     return true;
