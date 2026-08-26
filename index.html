@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#10131a">
+  <title>OIO Dash</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game-shell">
+    <header class="hud">
+      <div><span>PONTOS</span><strong id="score">0</strong></div>
+      <div class="brand">OIO <b>DASH</b></div>
+      <div><span>RECORDE</span><strong id="best">0</strong></div>
+    </header>
+    <section id="arena" class="arena" aria-label="Área do jogo">
+      <div class="sky-glow"></div>
+      <div id="player" class="player">●</div>
+      <div id="message" class="message">
+        <h1>OIO DASH</h1>
+        <p>Toque para saltar</p>
+        <button id="start">JOGAR</button>
+      </div>
+      <div class="ground"></div>
+    </section>
+    <button id="jump" class="jump">SALTAR</button>
+    <p class="tip">Desvie dos blocos e sobreviva o máximo que conseguir.</p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
