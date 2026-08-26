@@ -1,4 +1,4 @@
-export function updateHud(scoreEl, bestEl, score, best) {
+export function updateHud(scoreEl, coinsEl, score, coins) {
   scoreEl.textContent = Math.floor(score);
-  bestEl.textContent = best;
+  coinsEl.textContent = coins;
 }
